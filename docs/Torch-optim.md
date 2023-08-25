@@ -1,23 +1,4 @@
-<div class="tl_page_wrap">
-
-<div class="tl_page">
-
-<main class="tl_article">
-
-<header class="tl_article_header" dir="auto">
-
-# Torch optim
-
-<address><a rel="author"></a><time datetime="2020-12-27T16:05:30+0000">December 27, 2020</time></address>
-
-</header>
-
-<article id="_tl_editor" class="tl_article_content">
-
 # Torch optim  
-
-<address>  
-</address>
 
 `torch.optim` это пакет реализующий различные алгоритмы оптимизации. Самые популярные методы уже реализованы, и интерфейс достаточно общий, что бы в будущем легко интегрировать более сложные методы.
 
@@ -29,24 +10,24 @@
 
 Пример инициализации
 
-<pre>optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
-</pre>
+```
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+```
 
-Все оптимизаторы выполняются методом `step()`. Он обновляет параметры и вызывается как:
-
-#### `optimizer.step()`
+Все оптимизаторы выполняются методом `step()`. Он обновляет параметры и вызывается как: `optimizer.step()`
 
 Метод должен быть вызван после вычисления градиентов с помощью `backward()`.
 
 Пример:
 
-<pre>for input, target in dataset:
+```
+for input, target in dataset:
     optimizer.zero_grad()
     output = model(input)
     loss = loss_fn(output, target)
     loss.backward()
     optimizer.step()
-</pre>
+```
 
 * * *
 
@@ -209,64 +190,9 @@ set_to_none ([_bool_](https://docs.python.org/3/library/functions.html#bool)) �
 
 Примеры:
 
-<pre>>>> optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+```
+>>> optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
 >>> optimizer.zero_grad()
 >>> loss_fn(model(input), target).backward()
 >>> optimizer.step()
-</pre>
-
-</article>
-
-<div id="_tl_tooltip" class="tl_tooltip">
-
-<div class="buttons"><span class="button_hover"></span><span class="button_group"></span><span class="button_group"></span></div>
-
-<div class="prompt"><span class="close"></span>
-
-<div class="prompt_input_wrap"><input type="url" class="prompt_input"></div>
-
-</div>
-
-</div>
-
-<aside class="tl_article_buttons"><button id="_edit_button" class="button edit_button">Edit</button><button id="_publish_button" class="button publish_button">Publish</button></aside>
-
-</main>
-
-</div>
-
-<div class="tl_page_footer">
-
-<div id="_report_button" class="tl_footer_button">Report content on this page</div>
-
-</div>
-
-</div>
-
-<div class="tl_popup tl_popup_hidden" id="_report_popup">
-
-<main class="tl_popup_body tl_report_popup">
-
-<form id="_report_form" method="post">
-
-<section>
-
-## Report Page
-
-<div class="tl_radio_items"><label class="tl_radio_item"><input type="radio" class="radio" name="reason" value="violence"> <span class="tl_radio_item_label">Violence</span> </label> <label class="tl_radio_item"> <input type="radio" class="radio" name="reason" value="childabuse"> <span class="tl_radio_item_label">Child Abuse</span> </label> <label class="tl_radio_item"> <input type="radio" class="radio" name="reason" value="copyright"> <span class="tl_radio_item_label">Copyright</span> </label> <label class="tl_radio_item"> <input type="radio" class="radio" name="reason" value="illegal_drugs"> <span class="tl_radio_item_label">Illegal Drugs</span> </label> <label class="tl_radio_item"> <input type="radio" class="radio" name="reason" value="personal_details"> <span class="tl_radio_item_label">Personal Details</span> </label> <label class="tl_radio_item"><input type="radio" class="radio" name="reason" value="other"> <span class="tl_radio_item_label">Other</span></label> </div>
-
-<div class="tl_textfield_item tl_comment_field"><input type="text" class="tl_textfield" name="comment" value="" placeholder="Add Comment…"></div>
-
-<div class="tl_copyright_field">Please submit your DMCA takedown request to [dmca@telegram.org](mailto:dmca@telegram.org?subject=Report%20to%20Telegraph%20page%20%22Torch%20optim%22&body=Reported%20page%3A%20https%3A%2F%2Ftelegra.ph%2FTorch-optim-12-27%0A%0A%0A)</div>
-
-</section>
-
-<aside class="tl_popup_buttons"><button type="reset" class="button" id="_report_cancel">Cancel</button> <button type="submit" class="button submit_button">Report</button></aside>
-
-</form>
-
-</main>
-
-</div>
-
-<script>var T={"apiUrl":"https:\/\/edit.telegra.ph","datetime":1609085130,"pageId":"f79927724ffbfa9779198","editable":true};(function(){var b=document.querySelector('time');if(b&&T.datetime){var a=new Date(1E3*T.datetime),d='January February March April May June July August September October November December'.split(' ')[a.getMonth()],c=a.getDate();b.innerText=d+' '+(10>c?'0':'')+c+', '+a.getFullYear()}})();</script>
+```
