@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Яков Карандашев" /><link rel="canonical" href="https://imkarandashev.github.io/NN_course/Torch-optim/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Torch-optim - Курс по нейросетям</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Torch-optim";
+        var mkdocs_page_input_path = "Torch-optim.md";
+        var mkdocs_page_url = "/NN_course/Torch-optim/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+ <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        </style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Курс по нейросетям
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Torch-grad/">Torch-grad</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Torch-optim</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Dataloader/">Dataloader</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../VAE/">VAE</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Курс по нейросетям</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li class="breadcrumb-item active">Torch-optim</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/imkarandashev/NN_course/edit/master/docs/Torch-optim.md">Edit on NN_course</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="torch-optim">Torch optim</h1>
+<p><code>torch.optim</code> это пакет реализующий различные алгоритмы оптимизации. Самые популярные методы уже реализованы, и интерфейс достаточно общий, что бы в будущем легко интегрировать более сложные методы.</p>
+<p>Чтобы использовать <a href="https://pytorch.org/docs/stable/optim.html#module-torch.optim"><code>torch.optim</code></a> вы создать объект оптимизатора, который будет содержать состояния и обновлять параметры вычисления градиента.</p>
+<p>Для создания <a href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer"><code>Optimizer</code></a> вы должны задать итерацию содержащую параметры оптимизации. Затем вы должны указать специфические для оптимизатора параметры, такие как скорость обучения.</p>
+<p>Если вы хотите модель использующую GPU через <code>.cuda()</code>, то определите её до того как создадите оптимизатор. Параметры модели после <code>.cuda()</code> будут отличаться от тех, что были при создании.</p>
+<p>Пример инициализации</p>
+<pre><code>optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+</code></pre>
+<p>Все оптимизаторы выполняются методом <code>step()</code>. Он обновляет параметры и вызывается как: <code>optimizer.step()</code></p>
+<p>Метод должен быть вызван после вычисления градиентов с помощью <code>backward()</code>.</p>
+<p>Пример:</p>
+<pre><code>for input, target in dataset:
+    optimizer.zero_grad()
+    output = model(input)
+    loss = loss_fn(output, target)
+    loss.backward()
+    optimizer.step()
+</code></pre>
+<hr />
+<p>class <code>torch.optim.Optimizer</code>(<em>params</em>, <em>defaults</em>)</p>
+<p>Базовый класс для всех оптимизаторов</p>
+<ul>
+<li>params (<em>iterable</em>) – an iterable of <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor"><code>torch.Tensor</code></a> s or <a href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a> s. Specifies what Tensors should be optimized.</li>
+<li>defaults – (dict): a dict containing default values of optimization options (used when a parameter group doesn’t specify them).</li>
+<li>params (<em>iterable</em>) - итерация <a href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor"><code>torch.Tensor</code></a> или <a href="https://docs.python.org/3/library/stdtypes.html#dict"><code>dict</code></a>. Определяет какие тензоры необходимо оптимизировать.</li>
+<li>defaults – (dict): словарь содержащий значения по умолчанию для параметра оптимизатора.</li>
+</ul>
+<p>Методы</p>
+<p><code>add_param_group</code>(<em>param_group</em>)</p>
+<p>Добавляет параметры группы в <a href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer"><code>Optimizer</code></a> s param_groups.</p>
+<p>Может быть полезно при точной настройке предварительно обученной сети, поскольку замороженный слой можно сделать обучаемым и добавить <a href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer"><code>Optimizer</code></a> по мере продвижения обучения.</p>
+<p><code>load_state_dict</code>(<em>state_dict</em>)</p>
+<p>Загружает состояние оптимизатора</p>
+<p>state_dict (<a href="https://docs.python.org/3/library/stdtypes.html#dict"><em>dict</em></a>) – состояние оптимизатора. Должен быть объектом который вернул <a href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer.state_dict"><code>state_dict()</code></a>.</p>
+<p><code>state_dict</code>()</p>
+<p>Возвращает состояние оптимизатора как dict.</p>
+<p><code>step</code>(<em>closure</em>)</p>
+<p>Выполняет один шаг оптимизатора(обновляет параметры).</p>
+<p>сlosure (<em>callable</em>) – Замыкание, которое переоценивает модель и возвращает убыток. Необязательный для большинства оптимизаторов.</p>
+<p><code>zero_grad</code>(<em>set_to_none: bool = False</em>)</p>
+<p>Устанавливает градиенты всех оптимизированных torch.Tensor на ноль.</p>
+<p>set_to_none (<a href="https://docs.python.org/3/library/functions.html#bool"><em>bool</em></a>) – вместо нулевого значения устанавливает градиенты на None. Меняет некоторое поведение.</p>
+<blockquote>
+<p><strong>Алгоритмы оптимизации</strong></p>
+<p><code>torch.optim.Adadelta</code>(<em>params</em>, <em>lr=1.0</em>, <em>rho=0.9</em>, <em>eps=1e-06</em>, <em>weight_decay=0</em>)</p>
+</blockquote>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>rho (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – коэффициент используемый для вычисления среднего квадрата градиента(по умолчанию: 0.9)</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию: 1e-6)</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – коэффициент который масштабирует дельта до её применения к параметрам (по умолчанию: 1.0)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.Adagrad</code>(<em>params</em>, <em>lr=0.01</em>, <em>lr_decay=0</em>, <em>weight_decay=0</em>, <em>initial_accumulator_value=0</em>, <em>eps=1e-10</em>)</p>
+</blockquote>
+<p>Реализует алгоритм Adagrad.</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-2)</li>
+<li>lr_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – снижение скорости обучения (по умолчанию: 0)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию: 1e-10)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.Adam</code>(<em>params</em>, <em>lr=0.001</em>, <em>betas=(0.9</em>, <em>0.999)</em>, <em>eps=1e-08</em>, <em>weight_decay=0</em>, <em>amsgrad=False</em>)</p>
+</blockquote>
+<p>Реализует алгоритм Adam</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-3)</li>
+<li>betas (<em>Tuple[</em><a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>,</em> <a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>], optional</em>) – коэффициенты, используемые для вычисления средних значений градиента и его квадрата (по умолчанию: (0.9, 0.999))</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию 1e-8)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+<li>amsgrad (<em>boolean, optional</em>) – другая версия алгоритма описанная в <a href="https://openreview.net/forum?id=ryQu7f-RZ">On the Convergence of Adam and Beyond</a> (default: False)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.AdamW</code>(<em>params</em>, <em>lr=0.001</em>, <em>betas=(0.9</em>, <em>0.999)</em>, <em>eps=1e-08</em>, <em>weight_decay=0.01</em>, <em>amsgrad=False</em>)</p>
+</blockquote>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-3)</li>
+<li>betas (<em>Tuple[</em><a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>,</em> <a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>], optional</em>) – коэффициенты, используемые для вычисления средних значений градиента и его квадрата (по умолчанию: (0.9, 0.999))</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию 1e-8)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+<li>amsgrad (<em>boolean, optional</em>) – следует ли использовать вариант этого алгоритма AMSGrad из статьи <a href="https://openreview.net/forum?id=ryQu7f-RZ">On the Convergence of Adam and Beyond</a> (default: False)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.SparseAdam</code>(<em>params</em>, <em>lr=0.001</em>, <em>betas=(0.9</em>, <em>0.999)</em>, <em>eps=1e-08</em>)</p>
+</blockquote>
+<ul>
+<li>Реализует ленивую версию алгоритма Adam, подходящую для разреженных тензоров.params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-3)</li>
+<li>betas (<em>Tuple[</em><a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>,</em> <a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>], optional</em>) – коэффициенты, используемые для вычисления средних значений градиента и его квадрата (по умолчанию: (0.9, 0.999))</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию 1e-8)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.Adamax</code>(<em>params</em>, <em>lr=0.002</em>, <em>betas=(0.9</em>, <em>0.999)</em>, <em>eps=1e-08</em>, <em>weight_decay=0</em>)</p>
+</blockquote>
+<p>Реализует алгоритм Adamax (вариант Adam, основанный на норме бесконечности)</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 2e-3)</li>
+<li>betas (<em>Tuple[</em><a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>,</em> <a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>], optional</em>) – коэффициенты, используемые для вычисления средних значений градиента и его квадрата</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию 1e-8)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.ASGD</code>(<em>params</em>, <em>lr=0.01</em>, <em>lambd=0.0001</em>, <em>alpha=0.75</em>, <em>t0=1000000.0</em>, <em>weight_decay=0</em>)</p>
+</blockquote>
+<p>Реализует усредненный стохастический градиентный спуск.</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-2)</li>
+<li>lambd (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшающий коэффициент (по умолчанию: 1e-4)</li>
+<li>alpha (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – мощность для обновления eta (defпо умолчаниюault: 0.75)</li>
+<li>t0 (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – точка, с которой начинается усреднение (по умолчанию: 1e6)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.LBFGS</code>(<em>params</em>, <em>lr=1</em>, <em>max_iter=20</em>, <em>max_eval=None</em>, <em>tolerance_grad=1e-07</em>, <em>tolerance_change=1e-09</em>, <em>history_size=100</em>, <em>line_search_fn=None</em>)</p>
+</blockquote>
+<p>Реализует алгоритм L-BFGS, в значительной степени вдохновленный minFunc.</p>
+<p>Этот оптимизатор не поддерживает параметры и группы параметров для отдельных параметров (может быть только один).</p>
+<p>Сейчас все параметры должны быть на одном устройстве. Это будет улучшено в будущем.</p>
+<p>Это оптимизатор с очень интенсивным использованием памяти (он требует дополнительных <code>param_bytes * (history_size + 1)</code> байтов ). Если он не помещается в памяти, попробуйте уменьшить размер истории или используйте другой алгоритм.</p>
+<ul>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a>) – скорость обучения (по умолчанию: 1)</li>
+<li>max_iter (<a href="https://docs.python.org/3/library/functions.html#int"><em>int</em></a>) – максимальное количество итераций на шаг оптимизации (по умолчанию: 20)</li>
+<li>max_eval (<a href="https://docs.python.org/3/library/functions.html#int"><em>int</em></a>) – максимальное количество вычислений функции за шаг оптимизации (по умолчанию: max_iter * 1.25).</li>
+<li>tolerance_grad (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a>) – допуск на прерывание по оптимальности первого порядка (по умолчанию: 1e-5).</li>
+<li>tolerance_change (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a>) – допуск прекращения при изменении значения функции / параметра (по умолчанию: 1e-9).</li>
+<li>history_size (<a href="https://docs.python.org/3/library/functions.html#int"><em>int</em></a>) – размер истории обновлений (по умолчанию: 100).</li>
+<li>line_search_fn (<a href="https://docs.python.org/3/library/stdtypes.html#str"><em>str</em></a>) – либо «strong_wolfe», либо None(по умолчанию: None).</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.RMSprop</code>(<em>params</em>, <em>lr=0.01</em>, <em>alpha=0.99</em>, <em>eps=1e-08</em>, <em>weight_decay=0</em>, <em>momentum=0</em>, <em>centered=False</em>)</p>
+</blockquote>
+<p>Реализует RMSprop алгоритм.</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-2)</li>
+<li>momentum (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – momentum factor (по умолчанию: 0)</li>
+<li>alpha (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – smoothing constant (по умолчанию: 0.99)</li>
+<li>eps (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – значение добавленное к знаменателю для повышение численной стабильности (по умолчанию 1e-8)</li>
+<li>centered (<a href="https://docs.python.org/3/library/functions.html#bool"><em>bool</em></a><em>, optional</em>) – если <code>True</code>, вычислить центрированный RMSProp, градиент нормализуется путем оценки его дисперсии</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+</ul>
+<p><code>torch.optim.Rprop</code>(<em>params</em>, <em>lr=0.01</em>, <em>etas=(0.5</em>, <em>1.2)</em>, <em>step_sizes=(1e-06</em>, <em>50)</em>)</p>
+<p>Реализует устойчивый алгоритм обратного распространения ошибки.</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – скорость обучения (по умолчанию: 1e-2)</li>
+<li>etas (<em>Tuple[</em><a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>,</em> <a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>], optional</em>) –пара (etaminus, etaplis), которые являются мультипликативными факторами увеличения и уменьшения (по умолчанию: (0.5, 1.2))</li>
+<li>step_sizes (<em>Tuple[</em><a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>,</em> <a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>], optional</em>) – пара минимальных и максимальных разрешенных размеров шага (по умолчанию: (1e-6, 50))</li>
+</ul>
+<blockquote>
+<p><code>torch.optim.SGD</code>(<em>params</em>, <em>lr=<required parameter></em>, <em>momentum=0</em>, <em>dampening=0</em>, <em>weight_decay=0</em>, <em>nesterov=False</em>)</p>
+</blockquote>
+<p>Реализует стохастический градиентный спуск (опционально с импульсом).</p>
+<ul>
+<li>params (<em>iterable</em>) – итерируемые параметры оптимизатора или словарь параметров по умолчанию.</li>
+<li>lr (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a>) – скорость обучения</li>
+<li>momentum (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – фактор импульса (по умолчанию: 0)</li>
+<li>weight_decay (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – уменьшение веса (L2 штраф) (по умолчанию: 0)</li>
+<li>dampening (<a href="https://docs.python.org/3/library/functions.html#float"><em>float</em></a><em>, optional</em>) – гашение импульса (по умолчанию: 0)</li>
+<li>nesterov (<a href="https://docs.python.org/3/library/functions.html#bool"><em>bool</em></a><em>, optional</em>) – дает импульс Нестерова(по умолчанию: False)</li>
+</ul>
+<p>Примеры:</p>
+<pre><code>&gt;&gt;&gt; optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+&gt;&gt;&gt; optimizer.zero_grad()
+&gt;&gt;&gt; loss_fn(model(input), target).backward()
+&gt;&gt;&gt; optimizer.step()
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Torch-grad/" class="btn btn-neutral float-left" title="Torch-grad"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Dataloader/" class="btn btn-neutral float-right" title="Dataloader">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Torch-grad/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Dataloader/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+<script>const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});</script></body>
+</html>

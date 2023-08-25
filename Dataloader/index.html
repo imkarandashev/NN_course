@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Яков Карандашев" /><link rel="canonical" href="https://imkarandashev.github.io/NN_course/Dataloader/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Dataloader - Курс по нейросетям</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Dataloader";
+        var mkdocs_page_input_path = "Dataloader.md";
+        var mkdocs_page_url = "/NN_course/Dataloader/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+ <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        </style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Курс по нейросетям
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Torch-grad/">Torch-grad</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Torch-optim/">Torch-optim</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Dataloader</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_1">Наборы данных в стиле карты</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">Наборы данных в итерационном стиле</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">Переопределение классов</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">Автоматический батчинг (по умолчанию)</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../VAE/">VAE</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Курс по нейросетям</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+      <li class="breadcrumb-item active">Dataloader</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/imkarandashev/NN_course/edit/master/docs/Dataloader.md">Edit on NN_course</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dataloader">Dataloader</h1>
+<p>Для удобства в PyTorch предоставляются ряд утилит для загрузки датасетов, их предварительной обработки и взаимодействия с ними. Эти вспомогательные классы находятся в модуле <code>torch.utils.data</code>. Здесь следует обратить внимание на две основные концепции:</p>
+<ol>
+<li><code>Dataset</code>, инкапсулирующий источник данных,</li>
+<li><code>DataLoader</code>, отвечающий за загрузку датасета, возможно, в параллельном режиме.</li>
+</ol>
+<p><code>torch.utils.data.Dataset</code>- абстрактный класс, представляющий набор данных.</p>
+<p>Самый важный аргумент <code>DataLoader</code> конструктора - <code>dataset</code> это объект набора данных, из которого загружаются данные. PyTorch поддерживает два разных типа наборов данных:</p>
+<ul>
+<li>наборы данных в стиле карты ,</li>
+<li>наборы данных в итерационном стиле .</li>
+</ul>
+<h3 id="_1">Наборы данных в стиле карты</h3>
+<p>Набор данных в стиле карты является тот , который реализует <code>__getitem__()</code> и <code>__len__()</code> протоколы, и представляет собой карту из (возможно нецелых) индексов/ключей к выборкам данных.</p>
+<p>Например, такой набор данных при доступе с помощью <code>dataset[idx]</code>мог бы прочитать <code>idx</code>-е изображение и соответствующую ему метку из папки на диске.</p>
+<h3 id="_2">Наборы данных в итерационном стиле</h3>
+<p>Набор данных итеративного стиля является экземпляром подкласса <code>IterableDataset</code> , реализующего <code>__iter__()</code> протокол, и представляет собой итерацию по выборкам данных. Этот тип наборов данных особенно подходит для случаев, когда случайное чтение дорого или даже маловероятно, и где размер пакета зависит от извлеченных данных.</p>
+<p>Например, такой набор данных при вызове <code>iter(dataset)</code>может возвращать поток считанных данных из базы данных, удаленного сервера или даже журналов, созданных в реальном времени.</p>
+<p><code>DataLoader</code>поддерживает автоматическое соединение отдельных выборок данных в пакеты с помощью аргументов <code>batch_size</code>, <code>drop_last</code> и <code>batch_sampler</code>.</p>
+<h3 id="_3">Переопределение классов</h3>
+<p><code>Dataset</code></p>
+<p>Ваш собственный набор данных должен наследовать <code>Dataset</code>и переопределять следующие методы:</p>
+<ul>
+<li>Внутри <code>__init__</code> обычно конфигурируются какие-либо пути или изменяется набор возвращаемых в конечном итоге образцов.</li>
+<li><code>__len__</code> так чтобы <code>len(dataset)</code> возвращал размер набора данных. указывается верхний предел индекса, с которым может быть вызван <code>__getitem__</code></li>
+<li><code>__getitem__</code> для поддержки индексации, в которой <code>dataset[i]</code> может использоваться для получения конкретного элемента</li>
+</ul>
+<p>DataLoader</p>
+<p>Чтобы перебрать датасет, можно, в принципе, применить цикл <code>for i in range</code> и обращаться к образцам при помощи <code>__getitem__</code>. Однако, было бы гораздо удобнее, если бы датасет сам реализовывал протокол итератора, и мы могли бы сами перебирать образцы при помощи <code>for sample in dataset</code>. К счастью, такой функционал предоставляется в классе <code>DataLoader</code>. Объект <code>DataLoader</code> принимает датасет и ряд опций, конфигурирующих процедуру извлечения образца. Например, можно параллельно загружать образцы, задействовав множество процессов. Для этого конструктор <code>DataLoader</code> принимает аргумент <code>num_workers</code>. Обратите внимание: <code>DataLoader</code> всегда возвращает пакеты, размер которых задается в параметре <code>batch_size</code>.</p>
+<p><code>DataLoader</code> содержит довольно нетривиальную логику, определяющую, как <em>комплектовать</em> отдельные образцы, возвращенные в методе <code>__getitem__</code> вашего датасета в очередной пакет, возвращаемый <code>DataLoader</code> при переборе. Например, если <code>__getitem__</code> возвращает словарь, то <code>DataLoader</code> агрегирует значения этого словаря в единое отображение, соответствующее одному пакету, использующему одинаковые ключи. Это значит, что, если метод <code>__getitem__</code> датасета возвращает <code>dict(example=example, label=label)</code>, то пакет, возвращенный <code>DataLoader</code>, вернет нечто наподобие <code>dict(example=[example1, example2, ...], label=[label1, label2, ...])</code>, то есть, распаковывая значения отдельных образцов, мы переупаковываем их под единым ключом для словаря пакета. Чтобы переопределить это поведение, можно передать аргумент функции для параметра <code>collate_fn</code> объекту <code>DataLoader</code>.</p>
+<p>CLASS</p>
+<p><code>torch.utils.data.DataLoader</code>(<em>dataset: torch.utils.data.dataset.Dataset[T_co], batch_size: Optional[int] = 1, shuffle: bool = False, sampler: Optional[torch.utils.data.sampler.Sampler[int]] = None, batch_sampler: Optional[torch.utils.data.sampler.Sampler[Sequence[int]]] = None, num_workers: int = 0, collate_fn: Callable[List[T], Any] = None, pin_memory: bool = False, drop_last: bool = False, timeout: float = 0, worker_init_fn: Callable[int, None] = None, multiprocessing_context=None, generator=None, *, prefetch_factor: int = 2, persistent_workers: bool = False</em>)</p>
+<ul>
+<li>dataset( <em>Dataset</em> ) - набор данных, из которого нужно загрузить данные.</li>
+<li>batch_size ( <em>int , необязательно</em> ) - сколько образцов в партии загружать (по умолчанию : 1) .</li>
+<li>shuffle ( <em>bool , необязательно</em> ) - установите, <code>True</code> чтобы данные перетасовывались в каждую эпоху (по умолчанию:False).</li>
+<li>sampler ( <em>Sampler или Iterable , необязательно</em> ) - определяет стратегию извлечения выборок из набора данных. Может быть любой <code>Iterable</code> с реализованным <code>__len__</code> . Если указано, <code>shuffle</code> указывать нельзя.</li>
+<li>batch_sampler ( <em>Sampler или Iterable , необязательно</em> ) - аналогично <code>sampler</code>, но возвращает несколько индексов за раз. Взаимоисключающий с <code>batch_size</code>, <code>shuffle</code>, <code>sampler</code>, и <code>drop_last</code>.</li>
+<li>num_workers ( <em>int , необязательно</em> ) - сколько параллельных процессоров использовать для загрузки данных. <code>0</code> означает, что данные будут загружены в основной процесс. ( по умолчанию: <code>0</code>)</li>
+<li>collate_fn ( <em>вызываемая , опционально</em> ) - объединяет список образцов, чтобы сформировать мини-партию тензора(ов). Используется при пакетной загрузке из набора данных в стиле карты.</li>
+<li>pin_memory ( <em>bool , необязательно</em> ) - Если True, загрузчик данных скопирует тензоры в закрепленную память CUDA перед их возвратом.</li>
+<li>drop_last ( <em>bool , необязательно</em> ) - установите значение True, чтобы отбросить последний неполный пакет, если размер набора данных не делится на размер пакета. Если False и размер набора данных не делится на размер пакета, то последний пакет будет меньше. (по умолчанию: False)</li>
+<li>timeout ( <em>numeric , optional</em> ) - если положительный, значение тайм-аута для сбора пакета от воркеров. Всегда должно быть неотрицательным. (по умолчанию: <code>0</code>)</li>
+<li>worker_init_fn ( <em>вызываемый , необязательный</em> ) - если не <code>None</code>, то это будет вызвано для каждого процесса с его id (int в <code>[0, num_workers - 1]</code>) для каждого входа после заполнения и перед загрузкой данных</li>
+<li>prefetch_factor ( <em>int , optional , keyword-only arg</em> ) - количество выборок, загруженных заранее каждым исполнителем. <code>2</code> означает, что будет предварительно загружено 2 * num_workers семпла для всех воркеров. (по умолчанию: <code>2</code>)</li>
+<li>persistent_workers ( <em>bool , необязательно</em> ) - если <code>True</code> загрузчик данных не завершит работу рабочих процессов после того, как набор данных был использован один раз. Это позволяет поддерживать рабочие экземпляры Dataset. ( по умолчанию: <code>False</code>)</li>
+</ul>
+<h3 id="_4">Автоматический батчинг (по умолчанию)</h3>
+<p>Это наиболее распространенный случай, который соответствует выборке минибатча и объединению их в пакетные выборки, т.е. содержащие тензоры с измерением, являющимся измерением батча (обычно первым).</p>
+<p>Если <code>batch_size</code>(по умолчанию <code>1</code>) не <code>None</code>, то загрузчик данных выдает пакетные выборки вместо отдельных выборок. <code>batch_size</code> и <code>drop_last</code> аргументы используются, чтобы указать, как загрузчик данных получает пакеты ключей набора данных. Для наборов данных в стиле карты пользователи могут альтернативно указать <code>batch_sampler</code>, что дает список ключей за раз.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Torch-optim/" class="btn btn-neutral float-left" title="Torch-optim"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../VAE/" class="btn btn-neutral float-right" title="VAE">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Torch-optim/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../VAE/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+<script>const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});</script></body>
+</html>
